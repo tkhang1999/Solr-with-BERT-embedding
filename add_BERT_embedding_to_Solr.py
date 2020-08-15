@@ -5,7 +5,7 @@ from sentence_transformers import SentenceTransformer
 PRE_TRAINED_MODEL = 'bert-base-nli-stsb-mean-tokens'
 
 # Read reviews data
-reviews = pd.read_csv("foodhunter_reviews.csv")
+reviews = pd.read_csv("configs/foodhunter_reviews.csv")
 
 # Encode reviews to BERT embeddings
 corpus = reviews['content']

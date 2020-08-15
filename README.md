@@ -3,7 +3,7 @@
 ## Introduction
 
 This simple code implementation describes how to incorporate BERT embedding to Solr search engine
-to achieve semantic search in Solr on a food reviews dataset
+to achieve semantic search (finding similar sentences) in Solr on a food reviews dataset
 
 ## Technologies
 * [Python 3.6/3.7](https://www.python.org/)
@@ -36,29 +36,29 @@ $ ./bin/solr start                                    # start solr
 $ ./bin/solr create -c bert -n basic_config           # create core named 'bert'
 ```
 
-* Add [Vector Scoring Plugin for Solr](https://github.com/saaay71/solr-vector-scoring) (you may follow the setup guide from this repository) as following steps
+* Add [Vector Scoring Plugin for Solr](https://github.com/saaay71/solr-vector-scoring) manually
 
 i. Stop the running `solr` server
 ```
 $ cd solr-6.6.6
-$ ./bin/solr stop -all                                    # stop solr
+$ ./bin/solr stop -all                                # stop solr
 ```
 
 ii. Download [VectorPlugin.jar](https://github.com/saaay71/solr-vector-scoring/blob/master/VectorPlugin.jar)
 
 iii. Copy `VectorPlugin.jar` to `solr-6.6.6/dist/plugins/` (Create the `plugins` folder if not exist)
 
-iv. Add the library to `solr-6.6.6/server/solr/bert/conf/solrconfig.xml` file:
+iv. Add the library to `solr-6.6.6/server/solr/bert/conf/solrconfig.xml` file between the `<config>` and `</config>` tags
 ```
 <lib dir="${solr.install.dir:../../../..}/dist/plugins/" regex=".*\.jar" />
 ```
 
-v. Add the plugin Query parser to `solr-6.6.6/server/solr/bert/conf/solrconfig.xml` file:
+v. Add the plugin query parser to `solr-6.6.6/server/solr/bert/conf/solrconfig.xml` file between the `<config>` and `</config>` tags
 ```
 <queryParser name="vp" class="com.github.saaay71.solr.VectorQParserPlugin" />
 ```
 
-vi. Add the fieldType `VectorField` to schema file `solr-6.6.6/server/solr/bert/conf/managed-schema`
+vi. Add the field type `VectorField` to schema file `solr-6.6.6/server/solr/bert/conf/managed-schema` between the `<schema>` and `</schema>` tags
 ```
   <fieldType name="VectorField" class="solr.TextField" indexed="true" termOffsets="true" stored="true" termPayloads="true" termPositions="true" termVectors="true" storeOffsetsWithPositions="true">
     <analyzer>
@@ -68,12 +68,12 @@ vi. Add the fieldType `VectorField` to schema file `solr-6.6.6/server/solr/bert/
   </fieldType>
 ```
 
-vii. Add the field vector to schema file `solr-6.6.6/server/solr/bert/conf/managed-schema`:
+vii. Add the field vector to schema file `solr-6.6.6/server/solr/bert/conf/managed-schema` between the `<schema>` and `</schema>` tags
 ```
 <field name="vector" type="VectorField" indexed="true" termOffsets="true" stored="true" termPositions="true" termVectors="true" multiValued="true"/>
 ```
 
-viii. Restart `solr` server
+viii. Restart `solr` server to enable the added plugin
 ```
 $ ./bin/solr start                                    # start solr
 ```
@@ -86,6 +86,8 @@ $ ./bin/solr start                                    # start solr
 ```
 $ python add_BERT_embedding_to_Solr.py
 ```
+
+* (Optional) Check that both `solrconfig.xml` and `managed-schema` in `solr-6.6.6/server/solr/bert/conf/` reflect the previous changes in Step 2. It should be somewhat similar to the two provided files in `configs/` respectively
 
 4. Make a search query
 
