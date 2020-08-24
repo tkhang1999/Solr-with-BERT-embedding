@@ -29,6 +29,6 @@ vectors = [' '.join(vector) for vector in vectors]
 data = [{"id": rid, "content": rev, "vector": vec} for rid, rev, vec in zip(reviews['id'], reviews['content'], vectors)]
 
 # Add data to Solr with core 'bert'
-solr = pysolr.Solr('http://localhost:8983/solr/bert', always_commit=True)
+solr = pysolr.Solr(constants.SOLR_URL, always_commit=True)
 print("Add data to Solr:")
 print(solr.add(data))
