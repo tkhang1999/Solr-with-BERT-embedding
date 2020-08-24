@@ -1,6 +1,7 @@
 import pandas as pd
 import pysolr
 from sentence_transformers import SentenceTransformer
+import tqdm
 import constants
 
 
@@ -10,11 +11,13 @@ reviews = pd.read_csv(constants.REVIEWS_DATA_CSV)
 # Encode reviews to BERT embeddings
 corpus = reviews['content']
 embedder = SentenceTransformer(constants.PRE_TRAINED_MODEL)
-corpus_embeddings = embedder.encode(corpus)
+
+print("Encoding reviews to BERT embeddings:")
+corpus_embeddings = embedder.encode(corpus, show_progress_bar=True)
 
 # Convert embedding to vector
 vectors = []
-for embedding in corpus_embeddings:
+for embedding in tqdm.tqdm(corpus_embeddings, desc="Converting embedding to vector format"):
     vector = []
     for i in range(len(embedding)):
         vector.append(str(i) + "|" + str(embedding[i]))
@@ -27,4 +30,5 @@ data = [{"id": rid, "content": rev, "vector": vec} for rid, rev, vec in zip(revi
 
 # Add data to Solr with core 'bert'
 solr = pysolr.Solr('http://localhost:8983/solr/bert', always_commit=True)
+print("Add data to Solr:")
 print(solr.add(data))
