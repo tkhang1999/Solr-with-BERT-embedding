@@ -1,13 +1,10 @@
 import pysolr
 from sentence_transformers import SentenceTransformer
+import constants
 
 
-PRE_TRAINED_MODEL = 'bert-base-nli-stsb-mean-tokens'
-SOLR_URL = 'http://localhost:8983/solr/bert'
-SOLR = pysolr.Solr(SOLR_URL)
-TOP_RESULTS = 15
-
-embedder = SentenceTransformer(PRE_TRAINED_MODEL)
+embedder = SentenceTransformer(constants.PRE_TRAINED_MODEL)
+solr = pysolr.Solr(constants.SOLR_URL)
 
 def semantic_search(query):
     # Encode query to BERT embedding
@@ -19,7 +16,7 @@ def semantic_search(query):
     query_search = "{!vp f=vector vector=\"%s\"}" % (query_vector)
     fl_search = "id,content,score"
 
-    search_results = SOLR.search(query_search, **{
+    search_results = solr.search(query_search, **{
         'fl': fl_search
     }, rows=600)
     # Format search results
@@ -34,7 +31,7 @@ if __name__ == '__main__':
 
     # Display top results with their similarity score
     print('\nQuery: ', query)
-    print('\nTop %d semantic search results:' % TOP_RESULTS)
+    print('\nTop %d semantic search results:' % constants.TOP_RESULTS)
 
-    for result in results[:TOP_RESULTS]:
+    for result in results[:constants.TOP_RESULTS]:
         print(result['content'][0], '(Score: %.4f)' % result['score'])

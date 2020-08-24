@@ -1,15 +1,15 @@
 import pandas as pd
 import pysolr
 from sentence_transformers import SentenceTransformer
+import constants
 
-PRE_TRAINED_MODEL = 'bert-base-nli-stsb-mean-tokens'
 
 # Read reviews data
-reviews = pd.read_csv("configs/foodhunter_reviews.csv")
+reviews = pd.read_csv(constants.REVIEWS_DATA_CSV)
 
 # Encode reviews to BERT embeddings
 corpus = reviews['content']
-embedder = SentenceTransformer(PRE_TRAINED_MODEL)
+embedder = SentenceTransformer(constants.PRE_TRAINED_MODEL)
 corpus_embeddings = embedder.encode(corpus)
 
 # Convert embedding to vector
